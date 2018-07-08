@@ -1,0 +1,15 @@
+# Custom texture
+
+An item texture is a 16x16 PNG file.
+
+## Looking at existing textures
+
+You can examine the existing textures that ship with Minecraft. They're in the
+`~/Library/Application Support/minecraft/versions/x.x.x/x.x.x.jar`.
+
+For example, if you have 1.12.2 installed, to get a list of all of the textures:
+
+```bash
+unzip -l ~/Library/Application\ Support/minecraft/versions/1.12.2/1.12.2.jar | grep png | less
+```
+

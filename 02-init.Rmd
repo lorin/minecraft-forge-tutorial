@@ -10,14 +10,14 @@ My example is src/main/java/hochstein/org/LemonadeMod.java. Initially it looks
 like this:
 
 ```java
-package hochstein.org.lemonade;
+package hochstein.org.lemonademod;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid="lemonade", name="Lemonade Mod", version="1.0")
+@Mod(modid="lemonademod", name="Lemonade Mod", version="1.0")
 public class LemonadeMod {
     private Logger logger;
 
@@ -38,7 +38,7 @@ This file contains metadata about the mod. Here's mine:
 ```json
 [
     {
-      "modid": "lemonade",
+      "modid": "lemonademod",
       "name": "Lemonade Mod",
       "description": "Adds lemonade and other beverage items",
       "version": "${version}",
