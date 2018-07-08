@@ -15,8 +15,7 @@ description: "This is a Minecraft forge tutorial"
 # Introduction
 
 This is a simple up and running guide for building Minecraft mods with
-Minecraft Forge. I wrote it because I'm more effective at learning things when
-I document them.
+Minecraft Forge. I wrote it as a personal learning aid.
 
 For more complete sources, check out:
 
