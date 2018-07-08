@@ -1,0 +1,22 @@
+# Mod metadata
+
+Metadata file: src/main/resources/mcmod.info 
+
+```json
+[
+{
+  "modid": "lemonade",
+  "name": "Lemonade Mod",
+  "description": "Adds lemonade and other beverage items",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Lorin Hochstein"],
+  "credits": ":"",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
+```
