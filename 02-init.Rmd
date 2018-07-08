@@ -1,4 +1,35 @@
-# Mod metadata
+# Initialize mod 
+
+## Delete ExampleMod.java
+
+Delete the src/main/java/com/example/examplemod/ExampleMod.java file.
+
+## Create a java class for your mod
+
+My example is src/main/java/hochstein/org/LemonadeMod.java. Initially it looks
+like this:
+
+```java
+package hochstein.org;
+
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.Logger;
+
+@Mod(modid="lemonade", name="Lemonade Mod", version="1.0")
+public class LemonadeMod {
+    private Logger logger;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        logger = event.getModLog();
+    }
+}
+```
+
+
+## Update metadata file
 
 Metadata file: src/main/resources/mcmod.info 
 
