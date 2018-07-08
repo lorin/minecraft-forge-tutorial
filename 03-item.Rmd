@@ -1,3 +1,115 @@
 # Custom item
 
+Here's a minimal, complete mod that just creates a new item.
 
+## Mod class
+
+The main mod class for adding a new item. This item has no
+custom behavior, although it does have a custom texture image.
+
+```java
+package org.lorinhochstein.lemonade;
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.Logger;
+import org.lorinhochstein.lemonade.proxy.CommonProxy;
+
+import static org.lorinhochstein.lemonade.LemonadeMod.modId;
+
+@Mod(modid=modId, name="Lemonade Mod", version="1.0")
+public class LemonadeMod {
+    private static Logger logger;
+
+    public static final String modId = "lemonade";
+
+    @Mod.Instance(modId)
+    public static LemonadeMod instance;
+
+    @SidedProxy(serverSide="org.lorinhochstein.lemonade.proxy.CommonProxy", clientSide="org.lorinhochstein.lemonade.proxy.ClientProxy")
+    public static CommonProxy proxy;
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        logger = event.getModLog();
+    }
+
+    @Mod.EventBusSubscriber
+    public static class RegistrationHandler {
+
+        @SubscribeEvent
+        public static void registerItems(RegistryEvent.Register<Item> event) {
+            logger.info("Registering lemonade");
+            Item lemonade = new Item()
+                            .setUnlocalizedName("lemonade")
+                            .setRegistryName("lemonade")
+                            .setCreativeTab(CreativeTabs.FOOD);
+
+            event.getRegistry().register(lemonade);
+            proxy.registerItemRenderer(lemonade, 0, "lemonade");
+        }
+    }
+}
+```
+
+## Client proxy
+
+We need to specify the location where Minecraft can load the resource files. We
+can't put this code directly in our LemonadeMod class because this code imports
+a `net.minecraft.client` library, and you aren't allowed any client-specific
+code.
+
+The way to get around this is to define a "proxy" class, with different
+implementations for client and server side. Here's the client-side
+implementation.
+
+```java
+package org.lorinhochstein.lemonade.proxy;
+
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
+import org.lorinhochstein.lemonade.LemonadeMod;
+
+public class ClientProxy extends CommonProxy {
+    @Override
+    public void registerItemRenderer(Item item, int meta, String id) {
+        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(LemonadeMod.modId + ":" + id, "inventory"));
+    }
+}
+```
+
+## Common proxy
+
+We don't have any custom server-side logic, so instead we just use the common
+base class for the server-side part. The registerItemRenderer method is just a
+no-op here.
+
+
+```java
+package org.lorinhochstein.lemonade.proxy;
+
+import net.minecraft.item.Item;
+
+public class CommonProxy {
+    public void registerItemRenderer(Item item, int meta, String id) {
+    }
+}
+```
+
+
+## Name
+
+src/main/resources/assets/lemonade/lang/en_us.lang
+
+```
+item.lemonade.name=Lemonade
+```
+
+We need to specify the localized name so it shows up as "Lemonade" in the UI.
+In this case, we've only defined the `EN_US` localization.
