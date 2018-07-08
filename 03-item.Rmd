@@ -8,7 +8,7 @@ The main mod class for adding a new item. This item has no
 custom behavior, although it does have a custom texture image.
 
 ```java
-package org.lorinhochstein.lemonade;
+package org.lorinhochstein.lemonademod;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -18,20 +18,20 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
-import org.lorinhochstein.lemonade.proxy.CommonProxy;
+import org.lorinhochstein.lemonademod.proxy.CommonProxy;
 
-import static org.lorinhochstein.lemonade.LemonadeMod.modId;
+import static org.lorinhochstein.lemonademod.LemonadeMod.modId;
 
 @Mod(modid=modId, name="Lemonade Mod", version="1.0")
 public class LemonadeMod {
     private static Logger logger;
 
-    public static final String modId = "lemonade";
+    public static final String modId = "lemonademod";
 
     @Mod.Instance(modId)
     public static LemonadeMod instance;
 
-    @SidedProxy(serverSide="org.lorinhochstein.lemonade.proxy.CommonProxy", clientSide="org.lorinhochstein.lemonade.proxy.ClientProxy")
+    @SidedProxy(serverSide="org.lorinhochstein.lemonademod.proxy.CommonProxy", clientSide="org.lorinhochstein.lemonademod.proxy.ClientProxy")
     public static CommonProxy proxy;
 
     @Mod.EventHandler
@@ -69,7 +69,7 @@ implementations for client and server side. Here's the client-side
 implementation.
 
 ```java
-package org.lorinhochstein.lemonade.proxy;
+package org.lorinhochstein.lemonademod.proxy;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -92,7 +92,7 @@ no-op here.
 
 
 ```java
-package org.lorinhochstein.lemonade.proxy;
+package org.lorinhochstein.lemonademod.proxy;
 
 import net.minecraft.item.Item;
 
@@ -105,7 +105,7 @@ public class CommonProxy {
 
 ## Name
 
-src/main/resources/assets/lemonade/lang/en_us.lang
+src/main/resources/assets/lemonademod/lang/en_us.lang
 
 ```
 item.lemonade.name=Lemonade
