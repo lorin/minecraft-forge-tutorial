@@ -1,6 +1,32 @@
 # Custom texture
 
+When you create objects like items and blocks, you need to specify a texture
+which determines what it looks like.
+
+## Item texture
+
 An item texture is a 16x16 PNG file.
+
+## Creating item textures with Piskel
+
+You can use whatever app you want to create your 16x16 PNG files. We're going
+to use [Piskel], a free web-based app, for creating item textures.
+
+## Setting up for a new texture
+
+1. Log into Piskel
+1. Click "Create Sprite" at the top
+1. Click the Resize icon on the right (square in square with arrow)
+1. Choose 16 px for width and height, and click "Resize"
+
+## Saving and exporting your texture
+
+1. Click the disk icon
+1. Give it a Title
+1. Click "Save to your gallery"
+1. Click the Export icon on the right (frame of mountain)
+1. Click PNG tab
+1. Click "Download"
 
 ## Looking at existing textures
 
@@ -13,3 +39,14 @@ For example, if you have 1.12.2 installed, to get a list of all of the textures:
 unzip -l ~/Library/Application\ Support/minecraft/versions/1.12.2/1.12.2.jar | grep png | less
 ```
 
+## Other good editing options
+
+* [Gimp] - free
+* [Acorn] - not free, but much cheaper than Photoshop!
+* [Pixelmator] - similar pricing to Acorn
+
+
+[Piskel]: https://www.piskelapp.com/
+[Gimp]: https://www.gimp.org/
+[Acorn]: https://flyingmeat.com/acorn/
+[Pixelmator]: https://www.pixelmator.com/mac/
