@@ -10,7 +10,7 @@ My example is src/main/java/hochstein/org/LemonadeMod.java. Initially it looks
 like this:
 
 ```java
-package hochstein.org;
+package hochstein.org.lemonade;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -37,20 +37,20 @@ This file contains metadata about the mod. Here's mine:
 
 ```json
 [
-{
-  "modid": "lemonade",
-  "name": "Lemonade Mod",
-  "description": "Adds lemonade and other beverage items",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["Lorin Hochstein"],
-  "credits": ":"",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
-}
+    {
+      "modid": "lemonade",
+      "name": "Lemonade Mod",
+      "description": "Adds lemonade and other beverage items",
+      "version": "${version}",
+      "mcversion": "${mcversion}",
+      "url": "",
+      "updateUrl": "",
+      "authorList": ["Lorin Hochstein"],
+      "credits": "",
+      "logoFile": "",
+      "screenshots": [],
+      "dependencies": []
+    }
 ]
 ```
 
