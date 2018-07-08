@@ -2,6 +2,8 @@
 
 Metadata file: src/main/resources/mcmod.info 
 
+This file contains metadata about the mod. Here's mine:
+
 ```json
 [
 {
@@ -20,3 +22,5 @@ Metadata file: src/main/resources/mcmod.info
 }
 ]
 ```
+
+This won't load properly until the Java mod class is created.
