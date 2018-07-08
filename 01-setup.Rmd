@@ -1,21 +1,39 @@
-# Introduction {#intro}
+# Setup {#setup}
 
-You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
+## Download Forge MDK
 
-Figures and tables with captions will be placed in `figure` and `table` environments, respectively.
+Grab version 1.12 of the Forge Mod Development Kit:
 
-```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'}
-par(mar = c(4, 4, .1, .1))
-plot(pressure, type = 'b', pch = 19)
+1. Browse to <http://files.minecraftforge.net/>
+1. Click on the "Mdk" icon in "Download Recommended"
+1. Click the "SKIP" button when it appears at the top right to go past the ad
+1. Save the forge-1.12.x-xx.x.x-mdk.zip file
+1. Create a directory for your mod and unzip the mdk into it
+
+For example:
+
+```shell
+$ mkdir lemonade-mod
+$ cd lemonade-mod
+$ unzip ~/Dowloads/forge-1.12.2-14.23.4.2705-mdk.zip
 ```
 
-Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig). Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab).
+## Set up for IntelliJ IDEA
 
-```{r nice-tab, tidy=FALSE}
-knitr::kable(
-  head(iris, 20), caption = 'Here is a nice table!',
-  booktabs = TRUE
-)
+```shell
+$ ./gradlew setupDecompWorkspace idea
 ```
 
-You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015].
+## Open in IntelliJ IDEA
+
+1. Click "Open"
+1. Navigate to your mod folder and click "Open"
+1. Click "Import Gradle project" at the bottom right
+1. Click "OK" to the popup
+
+## Run inside IntelliJ IDEA
+
+1. Ensure "Minecraft Client" is the active run configuration in the toolbar
+1. Click the "Run" icon in the toolbar
+
+![Clicking the run icon will launch Minecraft](figs/run.png)

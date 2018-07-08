@@ -17,7 +17,18 @@ description: "This is a Minecraft forge tutorial"
 This is a simple up and running guide for building Minecraft mods with
 Minecraft Forge. I wrote it as a personal learning aid.
 
-For more complete sources, check out:
+This book covers Forge 1.12.
+
+Writing mods with Forge requires knowledge of Java. This book assumes you're
+already familiar with Java.
+
+It's also written from the perspective of:
+
+* Running on macOS
+* IntelliJ IDEA as your IDE
+
+
+For more complete information, check out:
 
 * [MinecraftForge Official Documentation](http://mcforge.readthedocs.io/en/latest/)
 * [Shadowfacts Forge Mods tutorials](https://shadowfacts.net/tutorials/)
