@@ -1,11 +1,61 @@
-# Custom item
+# Creating a custom item
 
-Here's a minimal, complete mod that just creates a new item.
+We'll start by briefly going over a complete, simple mod.
 
-## Mod class
+This one adds a "lemonade" item. It acts as a potion that, when drunk, bestows
+four health points.
 
-The main mod class for adding a new item. This item has no
-custom behavior, although it does have a custom texture image.
+
+## Files
+
+Here are all of the files in this mod:
+
+```
+src
+└── main
+    ├── java
+    │   └── org
+    │       └── lorinhochstein
+    │           └── lemonademod
+    │               ├── LemonadeMod.java
+    │               ├── item
+    │               │   └── ItemLemonade.java
+    │               └── proxy
+    │                   ├── ClientProxy.java
+    │                   ├── Proxy.java
+    │                   └── ServerProxy.java
+    └── resources
+        ├── assets
+        │   └── lemonademod
+        │       ├── lang
+        │       │   └── en_us.lang
+        │       ├── models
+        │       │   └── item
+        │       │       └── lemonade.json
+        │       └── textures
+        │           └── items
+        │               └── lemonade.png
+        ├── mcmod.info
+        └── pack.mcmeta
+```
+
+* LemonadeMod.java - top-level mod file
+* ClientProxy.java, Proxy.java, ServerProxy.java - proxy files (described
+  below)
+* en_us.lang - contains the name of our custom item (Lemonade)
+* lemonade.json - file that tells Minecraft where to find the texture for the
+  image
+* lemonade.png - the texture for our lemonade image
+
+### LemonadeMod.java
+
+This is the top-level mod class. It registers our custom item class
+(LemonadeItem.java).
+
+It tells Minecraft where to find the custom resource file associated with 
+our custom item. That file, in turn, tells Minecraft where to find the custom
+texture image associated with our item.
+
 
 ```java
 package org.lorinhochstein.lemonademod;
@@ -18,7 +68,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
-import org.lorinhochstein.lemonademod.proxy.CommonProxy;
+import org.lorinhochstein.lemonademod.item.ItemLemonade;
+import org.lorinhochstein.lemonademod.proxy.Proxy;
+
 
 import static org.lorinhochstein.lemonademod.LemonadeMod.modId;
 
@@ -31,8 +83,8 @@ public class LemonadeMod {
     @Mod.Instance(modId)
     public static LemonadeMod instance;
 
-    @SidedProxy(serverSide="org.lorinhochstein.lemonademod.proxy.CommonProxy", clientSide="org.lorinhochstein.lemonademod.proxy.ClientProxy")
-    public static CommonProxy proxy;
+    @SidedProxy(serverSide="org.lorinhochstein.lemonademod.proxy.ServerProxy", clientSide="org.lorinhochstein.lemonademod.proxy.ClientProxy")
+    public static Proxy proxy;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -44,45 +96,193 @@ public class LemonadeMod {
 
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
-            logger.info("Registering lemonade");
-            Item lemonade = new Item()
+            logger.info("Registering items");
+            Item lemonade = new ItemLemonade()
                             .setUnlocalizedName("lemonade")
                             .setRegistryName("lemonade")
-                            .setCreativeTab(CreativeTabs.FOOD);
+                            .setCreativeTab(CreativeTabs.BREWING);
 
             event.getRegistry().register(lemonade);
-            proxy.registerItemRenderer(lemonade, 0, "lemonade");
+
+            proxy.setCustomModelResourceLocation(lemonade, "lemonade");
         }
     }
 }
 ```
 
-## Client proxy
+### ItemLemonade.java
 
-We need to specify the location where Minecraft can load the resource files. We
-can't put this code directly in our LemonadeMod class because this code imports
-a `net.minecraft.client` library, and you aren't allowed any client-specific
-code.
+This defines the behavior of our custom item. In particular, it specifies:
 
-The way to get around this is to define a "proxy" class, with different
-implementations for client and server side. Here's the client-side
-implementation.
+* The item is drinkable
+* Consuming the item increases food level
+* When viewing the item in the inventory, there's a description that says
+  "Delicious, refereshing lemonade"
+
 
 ```java
-package org.lorinhochstein.lemonademod.proxy;
+package org.lorinhochstein.lemonademod.item;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
-import org.lorinhochstein.lemonade.LemonadeMod;
+import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.FoodStats;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ClientProxy extends CommonProxy {
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import static java.lang.Integer.min;
+import static java.util.Objects.requireNonNull;
+
+public class ItemLemonade extends Item {
+
+    static final int MAX_FOOD_LEVEL = 20;
+    static final int FOOD_LEVEL_INCREASE = 4;
+
+    /**
+     * This method needs to be overridden because otherwise the duration is too short,
+     * the potion consumption won't animate correctly, and there won't be any sound
+     */
     @Override
-    public void registerItemRenderer(Item item, int meta, String id) {
-        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(LemonadeMod.modId + ":" + id, "inventory"));
+    public int getMaxItemUseDuration(ItemStack stack)
+    {
+        return 32;
+    }
+
+    @Override
+    public EnumAction getItemUseAction(ItemStack stack) {
+        return EnumAction.DRINK;
+    }
+
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+        playerIn.setActiveHand(handIn);
+        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        tooltip.add("Delicious, refreshing lemonade");
+    }
+
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+        Optional<EntityPlayer> entityPlayer = downcast(entityLiving);
+
+        boolean shouldShrinkStack = entityPlayer.map(x -> !x.capabilities.isCreativeMode).orElse(true);
+
+        if(shouldShrinkStack) {
+            stack.shrink(1);
+        }
+
+        entityPlayer.flatMap(this::downcast)
+                .ifPresent(mp -> CriteriaTriggers.CONSUME_ITEM.trigger(mp, stack));
+
+        Function<FoodStats, Integer> newFoodLevel = food -> min(food.getFoodLevel()+FOOD_LEVEL_INCREASE, MAX_FOOD_LEVEL);
+        Consumer<FoodStats> updateFoodLevel = food -> food.setFoodLevel(newFoodLevel.apply(food));
+
+        if(!worldIn.isRemote) {
+            entityPlayer.map(EntityPlayer::getFoodStats)
+                    .ifPresent(updateFoodLevel);
+        }
+
+        entityPlayer.ifPresent(ep->ep.addStat(requireNonNull(StatList.getObjectUseStats(this))));
+
+        if(shouldShrinkStack) {
+            if(stack.isEmpty()) {
+                return new ItemStack(Items.GLASS_BOTTLE);
+            }
+
+            entityPlayer.ifPresent(ep->ep.inventory.addItemStackToInventory(new ItemStack(Items.GLASS_BOTTLE)));
+        }
+
+        return stack;
+    }
+
+    Optional<EntityPlayer> downcast(EntityLivingBase entityLiving) {
+        return entityLiving instanceof EntityPlayer ? Optional.of((EntityPlayer)entityLiving) : Optional.empty();
+    }
+
+    Optional<EntityPlayerMP> downcast(EntityPlayer entityPlayer) {
+        return entityPlayer instanceof  EntityPlayerMP ? Optional.of((EntityPlayerMP)entityPlayer) : Optional.empty();
     }
 }
 ```
+
+
+## Proxies in more detail
+
+Proxies are a workaround for an implementation detail of Minecraft: there's a
+server version of Minecraft and a client version of Minecraft. The server
+version is used for running dedicated Minecraft servers. The mod that you write
+should be designed to handle being run on either a client or a server.
+
+The fact that a mod might run on a client side or server side causes problems
+because the server version of Minecraft does not link in client-related
+classes. This means that your mod can blow up if your mod class (or other
+classes) references client classes (those that start with
+`net.minecraft.client`) when loaded in the server.
+
+The problem is that your Mod class will typically need to make calls that use
+the client classes! For example, to associate a custom item with a custom
+texture, you need access to the
+`net.minecraft.client.renderer.block.model.ModelResourceLocation` class.
+
+The workaround that Minecraft Forge provides is to:
+
+* Have you put client-specific code and server-specific code in methods special proxy classes
+* Have you define an interface or base class that the client and server proxies will
+  inherit from
+* Instantiate for you a proxy object that will be the client proxy when the
+  mod is loaded on the client side, and will be a server proxy when the mod is
+  loaded on the server side
+
+In our case, we need to call client code to tell Minecraft Forge where to find
+our lemonade.json resource file, so we put that in 
+
+
+
+
+define a proxy interface with
+different implementations on the client or server. That's where this code in
+our `LemonadeMod` class comes in:
+
+```java
+    @SidedProxy(serverSide="org.lorinhochstein.lemonademod.proxy.ServerProxy", clientSide="org.lorinhochstein.lemonademod.proxy.ClientProxy")
+    public static Proxy proxy;
+```
+
+From the example code above, if our mod runs on a Minecraft client, Minecraft
+Forge will ensure that the `proxy` object is an instance of
+`org.lorinhochstein.lemonademod.proxy.ClientProxy`, and similar for the
+serverSide.
+
+
+(This description is simplified. See [Sides in Minecraft][1] for more details).
+
+[1]: http://mcforge.readthedocs.io/en/latest/concepts/sides/
+
+## Proxy interface
+
+You can specify your Proxy as a class or interface, I prefer to use interfaces
+with default no-op implementations for all of the classes.
 
 ## Common proxy
 
