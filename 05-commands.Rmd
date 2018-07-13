@@ -1,0 +1,24 @@
+# Minecraft commands
+
+You can execute commands to Minecraft by typing `/`. This isn't part of Forge,
+but can be useful for switching back and forth between creative and survival.
+
+
+For example, this sequence commands will 
+
+1. Switch to survival mode 
+2. Create a hunger effect for 3 seconds, at amplication level 100
+3. Switch to creative mode
+
+```
+/gamemode s
+/effect <TAB> minecraft:hunger 3 100
+/gamemode c
+```
+
+Note that Minecraft supports tab completion. For example,  you can type `m<TAB>hu` to 
+autocomplete to `minecraft:hunger`.
+
+See [Commands] for more details.
+
+[Commands]: https://minecraft.gamepedia.com/Commands
