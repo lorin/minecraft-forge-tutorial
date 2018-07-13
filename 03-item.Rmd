@@ -226,6 +226,73 @@ public class ItemLemonade extends Item {
 }
 ```
 
+### Proxy.java
+
+```java
+package org.lorinhochstein.lemonademod.proxy;
+
+import net.minecraft.item.Item;
+
+public interface Proxy {
+    default void setCustomModelResourceLocation(Item item, String id) {
+    }
+}
+```
+
+
+### ClientProxy.java
+
+This is the code that will be used to associate our ItemLemonade class with the
+lemonade.json file.
+
+```java
+package org.lorinhochstein.lemonademod.proxy;
+
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
+import org.lorinhochstein.lemonademod.LemonadeMod;
+
+public class ClientProxy implements Proxy {
+    @Override
+    public void setCustomModelResourceLocation(Item item, String id) {
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(LemonadeMod.modId + ":" + id, "inventory"));
+    }
+}
+```
+
+### ServerProxy.java
+
+We have no custom server-side behavior, so this class doesn't do anything.
+
+```java
+package org.lorinhochstein.lemonademod.proxy;
+
+public class ServerProxy implements Proxy {
+}
+```
+
+### lemonade.json
+
+```json
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "lemonademod:items/lemonade"
+    }
+}
+```
+
+### en_us.lang
+
+```properties
+item.lemonade.name=Lemonade
+```
+
+### lemonade.png
+
+This is the texture for the item.
+
 
 ## Proxies in more detail
 
@@ -255,12 +322,10 @@ The workaround that Minecraft Forge provides is to:
   loaded on the server side
 
 In our case, we need to call client code to tell Minecraft Forge where to find
-our lemonade.json resource file, so we put that in 
+our lemonade.json resource file, so we put that in our ClientProxy class.
 
 
-
-
-define a proxy interface with
+We define a proxy interface with
 different implementations on the client or server. That's where this code in
 our `LemonadeMod` class comes in:
 
@@ -279,37 +344,3 @@ serverSide.
 
 [1]: http://mcforge.readthedocs.io/en/latest/concepts/sides/
 
-## Proxy interface
-
-You can specify your Proxy as a class or interface, I prefer to use interfaces
-with default no-op implementations for all of the classes.
-
-## Common proxy
-
-We don't have any custom server-side logic, so instead we just use the common
-base class for the server-side part. The registerItemRenderer method is just a
-no-op here.
-
-
-```java
-package org.lorinhochstein.lemonademod.proxy;
-
-import net.minecraft.item.Item;
-
-public class CommonProxy {
-    public void registerItemRenderer(Item item, int meta, String id) {
-    }
-}
-```
-
-
-## Name
-
-src/main/resources/assets/lemonademod/lang/en_us.lang
-
-```
-item.lemonade.name=Lemonade
-```
-
-We need to specify the localized name so it shows up as "Lemonade" in the UI.
-In this case, we've only defined the `EN_US` localization.
