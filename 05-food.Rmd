@@ -1,0 +1,79 @@
+# Custom food
+
+Creating a custom food item is much simpler than a custom potion item.
+
+## Item class
+
+This example implements a lemon as a food item. When eaten, the lemon
+reduces hunger by two points.
+
+Location: `src/main/java/org/lorinhochstein/lemonademod/item/ItemLemon.java`
+
+```java
+package org.lorinhochstein.lemonademod.item;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
+import static java.lang.Integer.min;
+
+public class ItemLemon extends ItemFood {
+
+    private static final int FOOD_LEVEL_INCREASE = 2;
+    private static final int MAX_FOOD_LEVEL = 20;
+
+    public ItemLemon() {
+        super(0, false);
+    }
+
+    @Override
+    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+        FoodStats foodStats = player.getFoodStats();
+        int newFoodLevel = min(food.getFoodLevel()+FOOD_LEVEL_INCREASE, MAX_FOOD_LEVEL);
+        foodStats.setFoodLevel(newFoodLevel);
+    }
+}
+```
+
+## Registering the item
+
+This item is registered the same way as the lemonade item, as code inside of
+the LemonadeMod.RegistrationHandler.registerItems method:
+
+```java
+Item lemon = new ItemLemon()
+        .setUnlocalizedName("lemon")
+        .setRegistryName("lemon")
+        .setCreativeTab(CreativeTabs.FOOD);
+event.getRegistry().register(lemon);
+proxy.setCustomModelResourceLocation(lemon, "lemon");
+```
+
+## Naming the item
+
+Location: `src/main/resources/assets/lemonademod/lang/en_us.lang` 
+
+Add the line:
+
+```properties
+item.lemon.name=Lemon
+```
+
+## Specifying the custom texture
+
+Location: `src/main/resources/assets/lemonademod/models/item/lemon.json`
+
+```json
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "lemonademod:items/lemon"
+    }
+}
+```
+
+16x16 PNG file Location `src/main/resources/assets/lemonademod/textures/items/lemon.png`
+
+![lemon](figs/lemon.png)

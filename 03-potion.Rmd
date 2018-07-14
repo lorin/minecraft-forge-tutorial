@@ -1,8 +1,8 @@
-# Creating a custom item
+# Custom potion
 
 We'll start by briefly going over a complete, simple mod.
 
-This one adds a "lemonade" item. It acts as a potion that, when drunk, bestows
+This one adds a "lemonade" potion item. It acts as a potion that, when drunk, bestows
 four health points.
 
 
